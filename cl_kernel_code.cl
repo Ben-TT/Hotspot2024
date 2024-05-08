@@ -329,6 +329,7 @@ void kernel sumFftSField(global const float *fft_real, global float *V) {
   V[idx] = fft_real[idx000];          // V[idx] = 5.0;
 }
 
+// for Sphere
 void kernel tnp_k_implicit(global const float8 *a1,
                            global const float8 *a2, // E, B coeff
                            global float *x0, global float *y0,
@@ -457,6 +458,7 @@ void kernel tnp_k_implicit(global const float8 *a1,
   z1[id] = z;
 }
 
+// for Cylinder
 void kernel tnp_k_implicitz(global const float8 *a1,
                             global const float8 *a2, // E, B coeff
                             global float *x0, global float *y0,
@@ -583,6 +585,7 @@ void kernel tnp_k_implicitz(global const float8 *a1,
   z1[id] = z;
 }
 
+// for Octant
 void kernel tnp_k_implicito(global const float8 *a1,
                             global const float8 *a2, // E, B coeff
                             global float *x0, global float *y0,
@@ -709,6 +712,7 @@ void kernel tnp_k_implicito(global const float8 *a1,
   z1[id] = z;
 }
 
+// for Quadrant
 void kernel tnp_k_implicitq(global const float8 *a1,
                             global const float8 *a2, // E, B coeff
                             global float *x0, global float *y0,
@@ -836,6 +840,7 @@ void kernel tnp_k_implicitq(global const float8 *a1,
   z1[id] = z;
 }
 
+// not in use
 void kernel densitybylayer(global const float *x0, global const float *y0,
                            global const float *z0, // prev pos
                            global const float *x1, global const float *y1,

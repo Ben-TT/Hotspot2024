@@ -8,8 +8,8 @@
  //#define quadrant // do problem 1/4 sphere or cylinder
 #define Weibull
 constexpr float weibullb = 2; // b factor for weibull distribn. larger means closer to a shell. ~1 means filled more at the center.
-#define Temp_e 1e5            // in Kelvin 1e7 ~1keV
-#define Temp_d 1e7            // in Kelvin
+#define Temp_e 1e5            // in Kelvin 1e7 ~1keV (electron temperature)
+#define Temp_d 1e7            // in Kelvin (deuteron temperature)
 constexpr int f1 = 1000;      // make bigger to make smaller time steps // 300 is min for sphere slight increase in KE
 constexpr int f2 = f1 * 1.2;
 constexpr float incf = 1.2f;        // increment
@@ -22,13 +22,13 @@ constexpr size_t n_parte = n_partd;
 constexpr size_t nback = n_partd / 2; // background stationary particles distributed over all cells - improves stability
 
 constexpr float R_s = n_space / 1;                                                            // Low Pass Filter smoothing radius. Not in use
-constexpr float r0_f[3] = {(float)n_space / 8.0, (float)n_space / 8.0, (float)n_space / 4.0}; //  radius of sphere or cylinder (electron, ion, z-pinch plasma)
+constexpr float r0_f[3] = {(float)n_space / 8.0, (float)n_space / 8.0, (float)n_space / 4.0}; //  initial radius of sphere (distribution) or cylinder (electron, ion, z-pinch plasma)
 
 constexpr float Bz0 = 0.00001;     // in T, static constant fields
 constexpr float Btheta0 = 0.00001; // in T, static constant fields
 constexpr float Ez0 = 1.0e1;       // in V/m
-constexpr float vz0 = 2.0e7f;
-constexpr float a0 = 1e-6;                          // typical dimensions of a cell in m This needs to be smaller than debye length otherwise energy is not conserved if a particle moves across a cell
+constexpr float vz0 = 2.0e7f;      // initial velocity
+constexpr float a0 = 1e-6;                          // typical dimensions of a cell in m; this needs to be smaller than debye length otherwise energy is not conserved if a particle moves across a cell
 constexpr float a0_ff = 1.0 + 1.0 / (float)n_space; // rescale cell size, if particles rollover this cannot encrement more than 1 cell otherwise will have fake "waves"
 constexpr float target_part = 1e9;                  // 3.5e22 particles per m^3 per torr of ideal gas. 7e22 electrons for 1 torr of deuterium
 constexpr float v0_r = 0;                           // initial directed radial velocity outwards is positive
@@ -145,26 +145,25 @@ struct par // useful parameters
     float posH_1[3] = {a0 * (n_space_divx - 3) / 2.0f, a0 *(n_space_divy - 3.0) / 2.0, a0 *(n_space_divz - 3.0) / 2.0};     // Highes position of cells (x,y,z)
     float posL_15[3] = {-a0 * (n_space_divx - 4) / 2.0f, -a0 *(n_space_divy - 4.0) / 2.0, -a0 *(n_space_divz - 4.0) / 2.0}; // Lowest position of cells (x,y,z)
     float posH_15[3] = {a0 * (n_space_divx - 4) / 2.0f, a0 *(n_space_divy - 4.0) / 2.0, a0 *(n_space_divz - 4.0) / 2.0};    // Highes position of cells (x,y,z)
-
     float posL2[3] = {-a0 * n_space_divx, -a0 *n_space_divy, -a0 *n_space_divz};
 #endif
-#endif
-    float dd[3] = {a0, a0, a0}; // cell spacing (x,y,z)
 
+#endif
+    float dd[3] = {a0, a0, a0};  // cell spacing (x,y,z)
     unsigned int n_space_div[3] = {n_space_divx, n_space_divy, n_space_divz};
     unsigned int n_space_div2[3] = {n_space_divx2, n_space_divy2, n_space_divz2};
     unsigned int n_part[3] = {n_parte, n_partd, n_parte + n_partd};
-    float UE = 0;
-    float UB = 0;
-    // for tnp
-    float Ecoef[2] = {0, 0};
-    float Bcoef[2] = {0, 0};
-    uint32_t ncalcp[2] = {md_me, 1};
+    float UE = 0;  // defined here, but the value is not used
+    float UB = 0;  // defined here, but the value is not used
+    // for tnp (the next position); calculating the evolution of particles from one time step to the next
+    float Ecoef[2] = {0, 0};  // defined here, but the value is not used
+    float Bcoef[2] = {0, 0};  // defined here, but the value is not used
+    uint32_t ncalcp[2] = {md_me, 1};  // do md_me=60 calculations for electron before doing 1 for deuteron
     uint32_t nc = nc1;
-    uint32_t n_partp[2] = {n_parte, n_partd}; // 0,number of "super" electrons, electron +deuteriom ions, total
+    uint32_t n_partp[2] = {n_parte, n_partd};  // 0, number of "super" electrons, electron +deuteriom ions, total
     unsigned int cl_align = 2048;
     std::string outpath;
-    float a0_f = 1.0; // factor to scale cell size
+    float a0_f = 1.0;  // factor to scale cell size
     cl_mem maxval_buffer = 0;
     cl_mem nt_buffer = 0;
     int cdt = 0;
